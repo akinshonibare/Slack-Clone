@@ -1,0 +1,19 @@
+.form {
+  width: 300px;
+}
+.form-forgot {
+  float: right;
+}
+.form-button {
+  width: 100%;
+}
+.form-wrapper {
+    width: 100%;
+    min-height: 100vh;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+.login-alert {
+  margin-bottom: 12px !important;
+}
