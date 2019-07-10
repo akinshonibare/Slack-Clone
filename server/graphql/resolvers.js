@@ -55,7 +55,7 @@ export default {
           const team = await models.Team.create({ ...args, owner: user.id });
           await models.Channel.bulkCreate([
             { name: 'general', public: true, teamId: team.id },
-            { name: 'random', public: true, teamId: team.id }
+            { name: 'random', public: true, teamId: team.id },
           ]);
           return {
             ok: true,
@@ -74,11 +74,17 @@ export default {
     // channel
     createChannel: async (parent, args, { models }) => {
       try {
-        await models.Channel.create(args);
-        return true;
+        const channel = await models.Channel.create(args);
+        return {
+          ok: true,
+          channel,
+        };
       } catch (err) {
         console.log(err);
-        return false;
+        return {
+          ok: false,
+          errors: formatErrors(err, models),
+        };
       }
     },
 

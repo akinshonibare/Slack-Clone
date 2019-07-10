@@ -56,7 +56,7 @@ export default gql`
     createTeam(name: String!): CreateTeamResponse!
 
     # channel
-    createChannel(teamId: Int!, name: String!, public: Boolean=false): Boolean!
+    createChannel(teamId: Int!, name: String!, public: Boolean=false): ChannelResponse!
 
     # message
     createMessage(channelId: Int!, text: String!): Boolean!
@@ -87,6 +87,13 @@ export default gql`
   type CreateTeamResponse {
     ok: Boolean!
     team: Team!
+    errors: [Error!]
+  }
+
+  # channel response
+  type ChannelResponse {
+    ok: Boolean!
+    channel: Channel
     errors: [Error!]
   }
 `;
