@@ -80,8 +80,8 @@ export default compose(
           }
           const data = store.readQuery({ query: allTeamsQuery });
           console.log(data);
-          const teamidx = findIndex(data.allTeams, ['id', teamId]);
-          data.allTeams[teamidx].channels.push(channel);
+          const teamidx = findIndex(data.myTeams, ['id', teamId]);
+          data.myTeams[teamidx].channels.push(channel);
           store.writeQuery({ query: allTeamsQuery, data });
         },
       });

@@ -43,7 +43,8 @@ export default gql`
     allUsers: [User!]!
 
     # team
-    allTeams: [Team!]!
+    myTeams: [Team!]!
+    invitedToTeams: [Team!]!
   }
 
   # mutation

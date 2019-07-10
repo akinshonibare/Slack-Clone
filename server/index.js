@@ -59,7 +59,7 @@ const createUsersWithMessages = async () => {
   );
 };
 
-const eraseDatabaseOnSync = true;
+const eraseDatabaseOnSync = false;
 
 models.sequelize.sync({ force: eraseDatabaseOnSync }).then(() => {
   // if (eraseDatabaseOnSync) {

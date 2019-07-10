@@ -12,7 +12,7 @@ import AppLayout from '../components/AppLayout';
 import { allTeamsQuery } from '../graphql/team';
 
 const ViewTeam = ({
-  data: { loading, allTeams },
+  data: { loading, myTeams, invitedToTeams},
   match: {
     params: { teamId, channelId },
   },
@@ -21,28 +21,31 @@ const ViewTeam = ({
     return null;
   }
 
-  if (allTeams.length === 0) {
+  const teams = [...myTeams, ...invitedToTeams];
+  console.log(teams)
+
+  if (teams.length === 0) {
     return <Redirect to="/create-team" />;
   }
 
   let teamIdInteger = parseInt(teamId, 10);
 
   const teamIdx = teamIdInteger
-    ? findIndex(allTeams, ['id', teamIdInteger])
+    ? findIndex(teams, ['id', teamIdInteger])
     : 0;
-  const team = allTeams[teamIdx];
+  const team = teamIdx === -1 ? teams[0] : teams[teamIdx];
 
   let channelIdInteger = parseInt(channelId, 10);
 
   const channelIdx = channelIdInteger
     ? findIndex(team.channels, ['id', channelIdInteger])
     : 0;
-  const channel = team.channels[channelIdx];
+  const channel = channelIdx === -1 ? team.channels[0] : team.channels[channelIdx];
 
   return (
     <AppLayout>
       <Sidebar
-        teams={allTeams.map((t) => ({
+        teams={teams.map((t) => ({
           id: t.id,
           letter: t.name.charAt(0).toUpperCase(),
         }))}

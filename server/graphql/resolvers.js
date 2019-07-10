@@ -18,8 +18,23 @@ export default {
     allUsers: (parent, args, { models }) => models.User.findAll(),
 
     // team
-    allTeams: requiresAuth.createResolver((parent, args, { models, user }) =>
+    myTeams: requiresAuth.createResolver((parent, args, { models, user }) =>
       models.Team.findAll({ where: { owner: user.id } }, { raw: true })
+    ),
+
+    invitedToTeams: requiresAuth.createResolver(
+      (parent, args, { models, user }) =>
+        models.Team.findAll(
+          {
+            include: [
+              {
+                model: models.User,
+                where: { id: user.id },
+              },
+            ],
+          },
+          { raw: true }
+        )
     ),
   },
 
