@@ -30,7 +30,7 @@ class Login extends Component {
     });
   }
 
-  handleSubmit = async (login) => {
+  handleSubmit = async () => {
     const { email, password } = this;
     const response = await this.props.mutate({
       variables: { email, password },

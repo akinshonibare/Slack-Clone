@@ -59,12 +59,12 @@ const createUsersWithMessages = async () => {
   );
 };
 
-const eraseDatabaseOnSync = false;
+const eraseDatabaseOnSync = true;
 
 models.sequelize.sync({ force: eraseDatabaseOnSync }).then(() => {
-  if (eraseDatabaseOnSync) {
-    createUsersWithMessages();
-  }
+  // if (eraseDatabaseOnSync) {
+  //   createUsersWithMessages();
+  // }
 
   app.listen(PORT, () => {
     console.log(`The server has started on port: ${PORT}`);

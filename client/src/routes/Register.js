@@ -40,12 +40,14 @@ class Register extends Component {
     });
   };
 
-  handleSubmit = async (e, register) => {
+  handleSubmit = async (e) => {
     e.preventDefault();
     const { username, email, password } = this.state;
     const response = await this.props.mutate({
-      variables: { username, email, password },
+      variables: { username, email, password }
     });
+    console.log(response)
+
     const { ok, errors } = response.data.register;
 
     if (ok) {
@@ -55,7 +57,7 @@ class Register extends Component {
         password: '',
         email: '',
       });
-      this.props.history.push('/');
+      this.props.history.push('/login');
     } else {
       const err = {};
       errors.forEach(({ path, message }) => {

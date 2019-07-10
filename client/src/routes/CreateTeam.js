@@ -30,7 +30,7 @@ class CreateTeam extends Component {
     });
   }
 
-  handleSubmit = async (login) => {
+  handleSubmit = async () => {
     const { name } = this;
     let response = null;
 
@@ -43,14 +43,12 @@ class CreateTeam extends Component {
       return;
     }
 
-    console.log(response);
-
     const { ok, errors, team } = response.data.createTeam;
 
     if (ok) {
-      Message.success('successfully created team');
-      this.name = '';
       this.props.history.push(`/view-team/${team.id}`);
+      Message.success('successfully created team');
+      this.name = ''; 
     } else {
       const err = {};
       errors.forEach(({ path, message }) => {
