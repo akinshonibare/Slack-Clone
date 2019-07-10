@@ -12,6 +12,7 @@
     "apollo-link-error": "^1.1.11",
     "apollo-link-http": "^1.5.15",
     "apollo-link-ws": "^1.0.18",
+    "formik": "^1.5.7",
     "graphql": "^14.3.1",
     "graphql-tag": "^2.10.1",
     "jwt-decode": "^2.2.0",

@@ -1,12 +1,13 @@
 import React from 'react';
 import styled from 'styled-components';
+import { Link } from 'react-router-dom';
 
 const TeamWrapper = styled.div`
   padding: 10px 0;
   grid-column: 1;
   grid-row: 1 / 4;
-  background-color: #362234;
-  color: #958993;
+  background-color: #007ea7;
+  color: #ccdbdc;
 `;
 
 const TeamList = styled.ul`
@@ -17,9 +18,9 @@ const TeamList = styled.ul`
 
 const TeamListItem = styled.li`
   cursor: pointer;
-  height: 40px;
-  width: 40px;
-  background-color: #676066;
+  height: 50px;
+  width: 50px;
+  background-color: #003249;
   color: #ffffff;
   margin: auto;
   margin-bottom: 10px;
@@ -31,12 +32,16 @@ const TeamListItem = styled.li`
   &: hover {
     border-style: solid;
     border-width: thick;
-    border-color: #767676;
+    border-color: #80ced7;
+    ${'' /* height: 50px;
+    width: 50px; */}
   }
 `;
 
 const team = ({ id, letter }) => (
-  <TeamListItem key={`team-${id}`}>{letter}</TeamListItem>
+  <Link to={`/view-team/${id}`} key={`team-${id}`}>
+    <TeamListItem>{letter}</TeamListItem>
+  </Link>
 );
 
 export default ({ teams }) => (

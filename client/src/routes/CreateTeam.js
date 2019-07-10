@@ -9,6 +9,9 @@ const CREATETEAMMUTATION = gql`
   mutation($name: String!) {
     createTeam(name: $name) {
       ok
+      team {
+        id
+      }
       errors {
         path
         message
@@ -42,12 +45,12 @@ class CreateTeam extends Component {
 
     console.log(response);
 
-    const { ok, errors } = response.data.createTeam;
+    const { ok, errors, team } = response.data.createTeam;
 
     if (ok) {
       Message.success('successfully created team');
       this.name = '';
-      this.props.history.push('/');
+      this.props.history.push(`/view-team/${team.id}`);
     } else {
       const err = {};
       errors.forEach(({ path, message }) => {

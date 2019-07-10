@@ -1,13 +1,14 @@
 import React from 'react';
 import styled from 'styled-components';
-
+import { Icon } from 'antd';
 const paddingLeft = 'padding-left: 10px';
 
 const ChannelWrapper = styled.div`
+  padding: 10px 0;
   grid-column: 2;
   grid-row: 1 /4;
-  background-color: #4e3a4c;
-  color: #958993;
+  background-color: #003249;
+  color: #CCDBDC;
 `;
 
 const TeamNameHeader = styled.h1`
@@ -32,7 +33,7 @@ const SideBarListItem = styled.li`
   padding: 2px;
   ${paddingLeft};
   &:hover {
-    background: #3e313c;
+    background: #007EA7;
   }
 `;
 const PushRight = styled.div`
@@ -53,7 +54,7 @@ const user = ({ id, name }) => (
   </SideBarListItem>
 );
 
-export default ({ teamName, username, channels, users }) => (
+export default ({ teamName, username, channels, users, onAddChannelClick }) => (
   <ChannelWrapper>
     <PushRight>
       <TeamNameHeader>{teamName}</TeamNameHeader>
@@ -61,7 +62,7 @@ export default ({ teamName, username, channels, users }) => (
     </PushRight>
     <div>
       <SideBarList>
-        <SideBarListHeader>Channels</SideBarListHeader>
+        <SideBarListHeader>Channels <Icon type="plus-circle" onClick={onAddChannelClick}/></SideBarListHeader>
         {channels.map(channel)}
       </SideBarList>
     </div>
