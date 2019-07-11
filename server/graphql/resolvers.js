@@ -22,25 +22,34 @@ export default {
       models.Team.findAll({ where: { owner: user.id } }, { raw: true })
     ),
 
+    // invitedToTeams: requiresAuth.createResolver(
+    //   (parent, args, { models, user }) =>
+    //     models.Team.findAll(
+    //       {
+    //         include: [
+    //           {
+    //             model: models.User,
+    //             where: { id: user.id },
+    //           },
+    //         ],
+    //       },
+    //       { raw: true }
+    //     )
+    // ),
+
     invitedToTeams: requiresAuth.createResolver(
       (parent, args, { models, user }) =>
-        models.Team.findAll(
-          {
-            include: [
-              {
-                model: models.User,
-                where: { id: user.id },
-              },
-            ],
-          },
-          { raw: true }
+        models.sequelize.query(
+          'select * from teams join members on id = team_id where user_id = ?',
+          { replacements: [user.id], model: models.Team }
         )
     ),
-  },
 
-  Team: {
-    channels: ({ id }, args, { models }) =>
-      models.Channel.findAll({ where: { teamId: id } }),
+    // message
+    // prettier-ignore
+    messages: requiresAuth.createResolver( async (parent, { channelId }, { models }) =>
+      await models.Message.findAll({ order: [['created_at', 'ASC']], where: { channelId } }, { raw: true })
+    )
   },
 
   Mutation: {
@@ -147,31 +156,63 @@ export default {
     ),
 
     // channel
-    createChannel: async (parent, args, { models }) => {
-      try {
-        const channel = await models.Channel.create(args);
-        return {
-          ok: true,
-          channel,
-        };
-      } catch (err) {
-        console.log(err);
-        return {
-          ok: false,
-          errors: formatErrors(err, models),
-        };
+    createChannel: requiresAuth.createResolver(
+      async (parent, args, { models, user }) => {
+        try {
+          const team = await models.Team.findOne(
+            { where: { id: args.teamId } },
+            { raw: true }
+          );
+          if (team.owner !== user.id) {
+            return {
+              ok: false,
+              errors: [
+                {
+                  path: 'name',
+                  message: 'You need to be the owner to create Channels',
+                },
+              ],
+            };
+          }
+          const channel = await models.Channel.create(args);
+          return {
+            ok: true,
+            channel,
+          };
+        } catch (err) {
+          console.log(err);
+          return {
+            ok: false,
+            errors: formatErrors(err, models),
+          };
+        }
       }
-    },
+    ),
 
     // message
-    createMessage: async (parent, args, { models, user }) => {
-      try {
-        await models.Message.create({ ...args, userId: user.id });
-        return true;
-      } catch (err) {
-        console.log(err);
-        return false;
+    // prettier-ignore
+    createMessage: requiresAuth.createResolver(async (parent, args, { models, user }) => {
+        try {
+          await models.Message.create({
+            ...args,
+            userId: user.id,
+          });
+          return true;
+        } catch (err) {
+          console.log(err);
+          return false;
+        }
       }
-    },
+    )
+  },
+
+  Team: {
+    channels: ({ id }, args, { models }) =>
+      models.Channel.findAll({ where: { teamId: id } }),
+  },
+
+  Message: {
+    user: ({ userId }, args, { models }) =>
+      models.User.findOne({ where: { id: userId } }, { raw: true }),
   },
 };

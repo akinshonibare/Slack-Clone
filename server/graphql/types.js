@@ -14,7 +14,7 @@ export default gql`
   type Team {
     id: Int!
     name: String!
-    owner: User!
+    owner: Int!
     members: [User!]!
     channels: [Channel!]!
   }
@@ -34,6 +34,7 @@ export default gql`
     text: String!
     user: User!
     channel: Channel!
+    createdAt: String!
   }
 
   # query
@@ -45,6 +46,9 @@ export default gql`
     # team
     myTeams: [Team!]!
     invitedToTeams: [Team!]!
+
+    # message
+    messages(channelId: Int!): [Message!]!
   }
 
   # mutation

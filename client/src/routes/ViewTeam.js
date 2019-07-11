@@ -5,14 +5,15 @@ import { Redirect } from 'react-router-dom';
 
 import Header from '../components/Header';
 import Sidebar from '../containers/Sidebar';
-import Messages from '../components/Messages';
 import SendMessage from '../components/SendMessage';
 import AppLayout from '../components/AppLayout';
+
+import MessageContainer from '../containers/MessageContainer';
 
 import { allTeamsQuery } from '../graphql/team';
 
 const ViewTeam = ({
-  data: { loading, myTeams, invitedToTeams},
+  data: { loading, myTeams, invitedToTeams },
   match: {
     params: { teamId, channelId },
   },
@@ -22,7 +23,7 @@ const ViewTeam = ({
   }
 
   const teams = [...myTeams, ...invitedToTeams];
-  console.log(teams)
+  console.log(teams);
 
   if (teams.length === 0) {
     return <Redirect to="/create-team" />;
@@ -30,9 +31,7 @@ const ViewTeam = ({
 
   let teamIdInteger = parseInt(teamId, 10);
 
-  const teamIdx = teamIdInteger
-    ? findIndex(teams, ['id', teamIdInteger])
-    : 0;
+  const teamIdx = teamIdInteger ? findIndex(teams, ['id', teamIdInteger]) : 0;
   const team = teamIdx === -1 ? teams[0] : teams[teamIdx];
 
   let channelIdInteger = parseInt(channelId, 10);
@@ -40,7 +39,8 @@ const ViewTeam = ({
   const channelIdx = channelIdInteger
     ? findIndex(team.channels, ['id', channelIdInteger])
     : 0;
-  const channel = channelIdx === -1 ? team.channels[0] : team.channels[channelIdx];
+  const channel =
+    channelIdx === -1 ? team.channels[0] : team.channels[channelIdx];
 
   return (
     <AppLayout>
@@ -52,15 +52,10 @@ const ViewTeam = ({
         team={team}
       />
       {channel && <Header channelName={channel.name} />}
+      {channel && <MessageContainer channelId={channel.id} />}
       {channel && (
-        <Messages channelId={channel.id}>
-          <ul>
-            <li />
-            <li />
-          </ul>
-        </Messages>
+        <SendMessage channelName={channel.name} channelId={channel.id} />
       )}
-      {channel && <SendMessage channelName={channel.name} />}
     </AppLayout>
   );
 };

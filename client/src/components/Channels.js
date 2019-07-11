@@ -10,7 +10,7 @@ const ChannelWrapper = styled.div`
   grid-column: 2;
   grid-row: 1 /4;
   background-color: #003249;
-  color: #CCDBDC;
+  color: #ccdbdc;
 `;
 
 const TeamNameHeader = styled.h1`
@@ -18,7 +18,6 @@ const TeamNameHeader = styled.h1`
   font-size: 20px;
   margin: 0;
 `;
-
 
 const SideBarList = styled.ul`
   width: 100%;
@@ -35,7 +34,7 @@ const SideBarListItem = styled.li`
   padding: 2px;
   ${paddingLeft};
   &:hover {
-    background: #007EA7;
+    background: #007ea7;
   }
 `;
 const PushRight = styled.div`
@@ -49,7 +48,7 @@ const Bubble = ({ on = true }) =>
 
 const channel = ({ id, name }, teamId) => (
   <Link to={`/view-team/${teamId}/${id}`} key={`channel-${id}`}>
-  <SideBarListItem># {name}</SideBarListItem>
+    <SideBarListItem># {name}</SideBarListItem>
   </Link>
 );
 const user = ({ id, name }) => (
@@ -58,7 +57,16 @@ const user = ({ id, name }) => (
   </SideBarListItem>
 );
 
-export default ({ teamName, username, channels, users, onAddChannelClick, teamId, onInvitePeopleClick, }) => (
+export default ({
+  teamName,
+  username,
+  channels,
+  users,
+  onAddChannelClick,
+  teamId,
+  isOwner,
+  onInvitePeopleClick,
+}) => (
   <ChannelWrapper>
     <PushRight>
       <TeamNameHeader>{teamName}</TeamNameHeader>
@@ -66,7 +74,9 @@ export default ({ teamName, username, channels, users, onAddChannelClick, teamId
     </PushRight>
     <div>
       <SideBarList>
-        <SideBarListHeader>Channels <Icon type="plus-circle" onClick={onAddChannelClick}/></SideBarListHeader>
+        <SideBarListHeader>
+          Channels {isOwner && <Icon type="plus-circle" onClick={onAddChannelClick} />}
+        </SideBarListHeader>
         {channels.map((c) => channel(c, teamId))}
       </SideBarList>
     </div>
@@ -76,10 +86,12 @@ export default ({ teamName, username, channels, users, onAddChannelClick, teamId
         {users.map(user)}
       </SideBarList>
     </div>
-    <div>
-      <a href="#invite-people" onClick={onInvitePeopleClick}>
-        + Invite People
-      </a>
-    </div>
+    {isOwner && (
+      <div>
+        <a href="#invite-people" onClick={onInvitePeopleClick}>
+          + Invite People
+        </a>
+      </div>
+    )}
   </ChannelWrapper>
 );
