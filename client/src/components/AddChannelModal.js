@@ -1,5 +1,5 @@
 import React from 'react';
-import { Form, Modal, Input } from 'antd';
+import { Form, Modal, Input, message as Message } from 'antd';
 import { withFormik } from 'formik';
 import findIndex from 'lodash/findIndex';
 import gql from 'graphql-tag';
@@ -59,6 +59,7 @@ export default compose(
       values,
       { props: { onClose, teamId, mutate }, setSubmitting }
     ) => {
+      let created = false;
       await mutate({
         variables: { teamId, name: values.name },
         optimisticResponse: {
@@ -78,6 +79,7 @@ export default compose(
           if (!ok) {
             return;
           }
+          created = true;
           const data = store.readQuery({ query: allTeamsQuery });
           console.log(data);
           const teamidx = findIndex(data.myTeams, ['id', teamId]);
@@ -85,6 +87,9 @@ export default compose(
           store.writeQuery({ query: allTeamsQuery, data });
         },
       });
+      if (created) {
+        Message.success(`Succesfully Created Channel`);
+      }
       onClose();
       setSubmitting(false);
     },

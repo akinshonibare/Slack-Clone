@@ -26,11 +26,13 @@
     "express": "^4.17.1",
     "faker": "^4.1.0",
     "graphql": "^14.3.1",
+    "graphql-subscriptions": "^1.1.0",
     "graphql-tools": "^4.0.4",
     "jsonwebtoken": "^8.5.1",
     "lodash": "^4.17.11",
     "merge-graphql-schemas": "^1.5.8",
     "pg": "^7.11.0",
-    "sequelize": "^5.8.10"
+    "sequelize": "^5.8.10",
+    "subscriptions-transport-ws": "^0.9.16"
   }
 }

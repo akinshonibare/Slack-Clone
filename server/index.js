@@ -4,6 +4,10 @@ import cors from 'cors';
 import times from 'lodash/times';
 import faker from 'faker';
 import jwt from 'jsonwebtoken';
+import { createServer } from 'http';
+import { execute, subscribe } from 'graphql';
+import { PubSub } from 'graphql-subscriptions';
+import{ SubscriptionServer } from 'subscriptions-transport-ws';
 import SCHEMA from './graphql/schema';
 import { refreshTokens } from './auth';
 import models from './models';
@@ -60,15 +64,28 @@ const createUsersWithMessages = async () => {
 };
 
 const eraseDatabaseOnSync = false;
+const server = createServer(app);
 
 models.sequelize.sync({ force: eraseDatabaseOnSync }).then(() => {
   // if (eraseDatabaseOnSync) {
   //   createUsersWithMessages();
   // }
 
-  app.listen(PORT, () => {
+  server.listen(PORT, () => {
     console.log(`The server has started on port: ${PORT}`);
     console.log(`http://localhost:${PORT}/graphql`);
+
+    new SubscriptionServer(
+      {
+        execute,
+        subscribe,
+        schema: SCHEMA,
+      },
+      {
+        server,
+        path: '/subscriptions',
+      }
+    )
   });
 });
 

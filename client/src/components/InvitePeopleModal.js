@@ -1,5 +1,5 @@
 import React from 'react';
-import { Form, Modal, Input } from 'antd';
+import { Form, Modal, Input, message as Message } from 'antd';
 import { withFormik } from 'formik';
 import gql from 'graphql-tag';
 import { compose, graphql } from 'react-apollo';
@@ -69,6 +69,7 @@ export default compose(
       const { ok, errors } = response.data.addTeamMember;
       console.log(response)
       if (ok) {
+        Message.success(`Succesfully added New Member`)
         onClose();
         setSubmitting(false);
       } else {
