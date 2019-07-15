@@ -47,7 +47,7 @@ const httpLinkWithMiddleware = afterwareLink.concat(
 );
 
 const wsLink = new WebSocketLink({
-  uri: 'ws://localhost:3001/subscriptions',
+  uri: `ws://localhost:${GRAPHQL_API_PORT}/subscriptions`,
   options: {
     reconnect: true,
   },

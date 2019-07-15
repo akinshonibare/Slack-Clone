@@ -37,6 +37,11 @@ export default gql`
     createdAt: String!
   }
 
+  # subscription 
+  type Subscription {
+    newChannelMessage(channelId: Int!): Message!
+  }
+
   # query
   type Query {
     # user

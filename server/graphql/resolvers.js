@@ -1,4 +1,5 @@
 import _ from 'lodash';
+import { PubSub, withFilter } from 'graphql-subscriptions';
 import { tryLogin } from '../auth';
 import requiresAuth from '../permissions';
 
@@ -10,32 +11,31 @@ const formatErrors = (e, models) => {
   return [{ path: 'name', message: 'something went wrong' }];
 };
 
+const pubsub = new PubSub();
+const NEW_CHANNEL_MESSAGE = 'NEW_CHANNEL_MESSAGE';
+
 export default {
+  Subscription: {
+    newChannelMessage: {
+      subscribe: withFilter(
+        () => pubsub.asyncIterator(NEW_CHANNEL_MESSAGE),
+        (payload, args) => {
+          return payload.channelId === args.channelId;
+        }
+      ),
+    },
+  },
+
   Query: {
     // user
-    user: (parent, { id }, { models }) =>
-      models.User.findOne({ where: { id } }),
+    user: (parent, { id }, { models }) => models.User.findOne({ where: { id } }),
+    
     allUsers: (parent, args, { models }) => models.User.findAll(),
 
     // team
     myTeams: requiresAuth.createResolver((parent, args, { models, user }) =>
       models.Team.findAll({ where: { owner: user.id } }, { raw: true })
     ),
-
-    // invitedToTeams: requiresAuth.createResolver(
-    //   (parent, args, { models, user }) =>
-    //     models.Team.findAll(
-    //       {
-    //         include: [
-    //           {
-    //             model: models.User,
-    //             where: { id: user.id },
-    //           },
-    //         ],
-    //       },
-    //       { raw: true }
-    //     )
-    // ),
 
     invitedToTeams: requiresAuth.createResolver(
       (parent, args, { models, user }) =>
@@ -193,10 +193,23 @@ export default {
     // prettier-ignore
     createMessage: requiresAuth.createResolver(async (parent, args, { models, user }) => {
         try {
-          await models.Message.create({
+          const message = await models.Message.create({
             ...args,
             userId: user.id,
           });
+
+          const currentUser = await models.User.findOne({
+            where: {
+              id: user.id
+            }
+          })
+
+          pubsub.publish(NEW_CHANNEL_MESSAGE, { 
+            channelId: args.channelId, 
+            newChannelMessage: message.dataValues,
+            user: currentUser.dataValues,
+          });
+
           return true;
         } catch (err) {
           console.log(err);
@@ -212,7 +225,11 @@ export default {
   },
 
   Message: {
-    user: ({ userId }, args, { models }) =>
-      models.User.findOne({ where: { id: userId } }, { raw: true }),
+    user: ({ user, userId }, args, { models }) => {
+      if (user) {
+        return user;
+      }
+      return models.User.findOne({ where: { id: userId } }, { raw: true });
+    },
   },
 };

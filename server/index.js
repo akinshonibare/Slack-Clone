@@ -7,7 +7,7 @@ import jwt from 'jsonwebtoken';
 import { createServer } from 'http';
 import { execute, subscribe } from 'graphql';
 import { PubSub } from 'graphql-subscriptions';
-import{ SubscriptionServer } from 'subscriptions-transport-ws';
+import { SubscriptionServer } from 'subscriptions-transport-ws';
 import SCHEMA from './graphql/schema';
 import { refreshTokens } from './auth';
 import models from './models';
@@ -17,13 +17,12 @@ const { SECRET, SECRET2 } = config;
 
 const app = express();
 // enable cors
-const corsOptions = {
-  origin: 'http://localhost:3000',
-  credentials: true,
-};
+// const corsOptions = {
+//   origin: 'http://localhost:3000',
+//   credentials: true,
+// };
 
-app.use(cors(corsOptions));
-
+app.use(cors('*'));
 
 const addUser = async (req, res, next) => {
   const token = req.headers['x-token'];
@@ -33,7 +32,13 @@ const addUser = async (req, res, next) => {
       req.user = user;
     } catch (err) {
       const refreshToken = req.headers['x-refresh-token'];
-      const newTokens = await refreshTokens(token, refreshToken, models, SECRET, SECRET2);
+      const newTokens = await refreshTokens(
+        token,
+        refreshToken,
+        models,
+        SECRET,
+        SECRET2
+      );
       if (newTokens.token && newTokens.refreshToken) {
         res.set('Access-Control-Expose-Headers', 'x-token', 'x-refresh-token');
         res.set('x-token', newTokens.token);
@@ -53,39 +58,16 @@ SCHEMA.applyMiddleware({
 
 const PORT = process.env.PORT || 3000;
 
-const createUsersWithMessages = async () => {
-  await models.User.bulkCreate(
-    times(10, () => ({
-      username: faker.internet.userName(),
-      email: faker.internet.email(),
-      password: faker.internet.password(),
-    })),
-  );
-};
-
 const eraseDatabaseOnSync = false;
 const server = createServer(app);
 
 models.sequelize.sync({ force: eraseDatabaseOnSync }).then(() => {
-  // if (eraseDatabaseOnSync) {
-  //   createUsersWithMessages();
-  // }
 
   server.listen(PORT, () => {
-    console.log(`The server has started on port: ${PORT}`);
-    console.log(`http://localhost:${PORT}/graphql`);
+    console.log(`http://localhost:${PORT}${SCHEMA.graphqlPath}`);
+    console.log(`ws://localhost:${PORT}${SCHEMA.subscriptionsPath}`);
 
-    new SubscriptionServer(
-      {
-        execute,
-        subscribe,
-        schema: SCHEMA,
-      },
-      {
-        server,
-        path: '/subscriptions',
-      }
-    )
+    SCHEMA.installSubscriptionHandlers(server);
   });
 });
 
