@@ -1,13 +1,8 @@
 import 'dotenv/config';
 import express from 'express';
 import cors from 'cors';
-import times from 'lodash/times';
-import faker from 'faker';
 import jwt from 'jsonwebtoken';
 import { createServer } from 'http';
-import { execute, subscribe } from 'graphql';
-import { PubSub } from 'graphql-subscriptions';
-import { SubscriptionServer } from 'subscriptions-transport-ws';
 import SCHEMA from './graphql/schema';
 import { refreshTokens } from './auth';
 import models from './models';
