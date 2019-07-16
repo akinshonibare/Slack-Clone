@@ -34,10 +34,32 @@ const SERVER = new ApolloServer({
   },
   subscriptions: {
     path: '/subscriptions',
-    onConnect: async (connectionParams, webSocket, context) => {
-      console.log(
-        `subscription client connected.`
-      );
+    onConnect: async ({ token, refreshToken }, webSocket, context) => {
+      console.log(`subscription client connected.`);
+      if (token && refreshToken) {
+        let user = null;
+
+        try {
+          const payload = jwt.verify(token, SECRET);
+          user = payload.user;
+        } catch (err) {
+          const newTokens = await refreshTokens(
+            token,
+            refreshToken,
+            models,
+            SECRET,
+            SECRET2
+          );
+          user = newTokens.user;
+        }
+        if(!user) {
+          throw new Error('invalid auth tokens')
+        }
+
+        return true;
+      } else {
+        throw new Error('missing auth tokens');
+      }
     },
     onDisconnect: async (webSocket, context) => {
       console.log(`subscription client disconnected.`);

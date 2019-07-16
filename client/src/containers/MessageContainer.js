@@ -33,11 +33,29 @@ const NEWMESSAGESUBSCRIPTION = gql`
 
 class MessageContainer extends Component {
   componentDidMount() {
+    this.unsubscribe = this.subscribe(this.props.channelId);
+  }
+
+  componentWillReceiveProps({ channelId }) {
+    if (this.props.channelId !== channelId) {
+      if (this.unsubscribe) {
+        this.unsubscribe();
+      }
+      this.unsubscribe = this.subscribe(channelId);
+    }
+  }
+  componentWillUnmount() {
+    if (this.unsubscribe) {
+      this.unsubscribe();
+    }
+  }
+
+  subscribe = (channelId) =>
     this.props.data.subscribeToMore({
       document: NEWMESSAGESUBSCRIPTION,
-      variables: { channelId: this.props.channelId },
+      variables: { channelId },
       updateQuery: (prev, { subscriptionData }) => {
-        console.log(subscriptionData)
+        console.log(subscriptionData);
         if (!subscriptionData.data) return prev;
 
         return {
@@ -46,7 +64,6 @@ class MessageContainer extends Component {
         };
       },
     });
-  }
 
   render() {
     const {
@@ -86,4 +103,7 @@ export default graphql(MESSAGESQUERY, {
   variables: (props) => ({
     channelId: props.channelId,
   }),
+  options: {
+    fetchPolicy: 'network-only',
+  },
 })(MessageContainer);

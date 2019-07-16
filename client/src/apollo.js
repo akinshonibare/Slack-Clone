@@ -50,6 +50,10 @@ const wsLink = new WebSocketLink({
   uri: `ws://localhost:${GRAPHQL_API_PORT}/subscriptions`,
   options: {
     reconnect: true,
+    connectionParams: {
+      token: localStorage.getItem('token'),
+      refreshToken: localStorage.getItem('refreshToken'),
+    },
   },
 });
 
