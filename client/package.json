@@ -17,7 +17,7 @@
     "graphql": "^14.3.1",
     "graphql-tag": "^2.10.1",
     "jwt-decode": "^2.2.0",
-    "lodash": "^4.17.11",
+    "lodash": "^4.17.21",
     "mobx": "^5.10.1",
     "mobx-react": "^6.1.1",
     "node-sass": "^4.12.0",
